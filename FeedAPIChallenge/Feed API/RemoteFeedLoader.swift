@@ -28,6 +28,8 @@ public final class RemoteFeedLoader: FeedLoader {
 					return completion(.failure(Error.invalidData))
 				}
 
+				data.printJSON()
+
 				guard let root = try? JSONDecoder().decode(Root.self, from: data) else {
 					return completion(.failure(Error.invalidData))
 				}
@@ -52,6 +54,13 @@ private struct Item: Decodable {
 	let location: String?
 	let image: URL
 
+	enum CodingKeys: String, CodingKey {
+		case id = "image_id"
+		case description = "image_desc"
+		case location = "image_loc"
+		case image = "image_url"
+	}
+
 	var feedImage: FeedImage {
 		.init(
 			id: id,
@@ -59,5 +68,16 @@ private struct Item: Decodable {
 			location: location,
 			url: image
 		)
+	}
+}
+
+extension Data
+{
+	func printJSON()
+	{
+		if let JSONString = String(data: self, encoding: String.Encoding.utf8)
+		{
+			print(JSONString)
+		}
 	}
 }
