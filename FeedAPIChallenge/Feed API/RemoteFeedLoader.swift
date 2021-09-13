@@ -31,7 +31,7 @@ public final class RemoteFeedLoader: FeedLoader {
 				guard let root = try? JSONDecoder().decode(Root.self, from: data) else {
 					return completion(.failure(Error.invalidData))
 				}
-				
+
 				let feedImages = root.items.map { $0.feedImage }
 				return completion(.success(feedImages))
 
@@ -51,7 +51,7 @@ private struct Item: Decodable {
 	let description: String?
 	let location: String?
 	let image: URL
-	
+
 	var feedImage: FeedImage {
 		.init(
 			id: id,
