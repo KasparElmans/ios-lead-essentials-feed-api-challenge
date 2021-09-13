@@ -56,15 +56,15 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		}
 	}
 
-//	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
-//		let (sut, client) = makeSUT()
-//
-//		expect(sut, toCompleteWith: .failure(.invalidData), when: {
-//			let invalidJSON = Data("invalid json".utf8)
-//			client.complete(withStatusCode: 200, data: invalidJSON)
-//		})
-//	}
-//
+	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithInvalidJSON() {
+		let (sut, client) = makeSUT()
+
+		expect(sut, toCompleteWith: .failure(.invalidData), when: {
+			let invalidJSON = Data("invalid json".utf8)
+			client.complete(withStatusCode: 200, data: invalidJSON)
+		})
+	}
+
 //	func test_load_deliversInvalidDataErrorOn200HTTPResponseWithPartiallyValidJSONItems() {
 //		let (sut, client) = makeSUT()
 //
@@ -154,8 +154,4 @@ class LoadFeedFromRemoteUseCaseTests: XCTestCase {
 		let json = ["items": items]
 		return try! JSONSerialization.data(withJSONObject: json)
 	}
-}
-
-class Item: FeedImage, Codable {
-	
 }

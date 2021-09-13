@@ -22,23 +22,42 @@ public final class RemoteFeedLoader: FeedLoader {
 		client.get(from: url) { result in
 
 			switch result {
-			case .success(let response):
-				let data = response.0
-				let response = response.1
+			case .success(let (data, response)):
 
 				guard response.statusCode == 200 else {
 					return completion(.failure(Error.invalidData))
 				}
 
-				guard data.count > 0 else {
-					return completion(.success([]))
+				guard let root = try? JSONDecoder().decode(Root.self, from: data) else {
+					return completion(.failure(Error.invalidData))
 				}
+				
+				let feedImages = root.items.map { $0.feedImage }
+				return completion(.success(feedImages))
 
-				// TODO: map data to the model
-				return completion(.success([]))
 			case .failure:
 				return completion(.failure(Error.connectivity))
 			}
 		}
+	}
+}
+
+private struct Root: Decodable {
+	let items: [Item]
+}
+
+private struct Item: Decodable {
+	let id: UUID
+	let description: String?
+	let location: String?
+	let image: URL
+	
+	var feedImage: FeedImage {
+		.init(
+			id: id,
+			description: description,
+			location: location,
+			url: image
+		)
 	}
 }
