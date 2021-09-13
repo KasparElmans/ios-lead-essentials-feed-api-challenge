@@ -19,6 +19,26 @@ public final class RemoteFeedLoader: FeedLoader {
 	}
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
-		fatalError("Must be implemented")
+		client.get(from: url) { result in
+
+			switch result {
+			case .success(let response):
+				let data = response.0
+				let response = response.1
+
+				guard response.statusCode == 200 else {
+					return completion(.failure(Error.invalidData))
+				}
+
+				guard data.count > 0 else {
+					return completion(.success([]))
+				}
+
+				// TODO: map data to the model
+				return completion(.success([]))
+			case .failure:
+				return completion(.failure(Error.connectivity))
+			}
+		}
 	}
 }
