@@ -7,6 +7,7 @@ import Foundation
 public final class RemoteFeedLoader: FeedLoader {
 	private let url: URL
 	private let client: HTTPClient
+	private let OK_200 = 200
 
 	public enum Error: Swift.Error {
 		case connectivity
@@ -20,12 +21,12 @@ public final class RemoteFeedLoader: FeedLoader {
 
 	public func load(completion: @escaping (FeedLoader.Result) -> Void) {
 		client.get(from: url) { [weak self] result in
-			guard self != nil else { return }
+			guard let self = self else { return }
 
 			switch result {
 			case .success(let (data, response)):
 
-				guard response.statusCode == 200 else {
+				guard response.statusCode == self.OK_200 else {
 					return completion(.failure(Error.invalidData))
 				}
 
@@ -40,32 +41,5 @@ public final class RemoteFeedLoader: FeedLoader {
 				return completion(.failure(Error.connectivity))
 			}
 		}
-	}
-}
-
-private struct Root: Decodable {
-	let items: [Item]
-}
-
-private struct Item: Decodable {
-	let id: UUID
-	let description: String?
-	let location: String?
-	let image: URL
-
-	enum CodingKeys: String, CodingKey {
-		case id = "image_id"
-		case description = "image_desc"
-		case location = "image_loc"
-		case image = "image_url"
-	}
-
-	var feedImage: FeedImage {
-		.init(
-			id: id,
-			description: description,
-			location: location,
-			url: image
-		)
 	}
 }
