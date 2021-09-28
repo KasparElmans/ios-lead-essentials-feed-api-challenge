@@ -10,6 +10,10 @@ import Foundation
 
 struct Root: Decodable {
 	let items: [RemoteFeedItem]
+
+	func toFeedImages() -> [FeedImage] {
+		items.map { $0.feedImage }
+	}
 }
 
 struct RemoteFeedItem: Decodable {
